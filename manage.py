@@ -13,6 +13,10 @@ import os
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///{}".format(os.path.join(os.path.dirname(__file__), 'movie.sqlite'))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
+import os
+app.config["SECRET_KEY"] = os.urandom(24)
+
+
 mako.init_app(app)
 db.init_app(app)
 
