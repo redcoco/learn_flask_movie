@@ -1,4 +1,5 @@
 {% extends "admin/admin.html" %}
+{% import "ui/admin_paginate.html" as pg %}
 
 {% block content %}
     <!--内容-->
@@ -37,18 +38,23 @@
                                 <th>添加时间</th>
                                 <th>操作事项</th>
                             </tr>
-                            {% for v in range(1,11) %}
+{#                            {% for v in range(1,11) %}#}
+                              {% for v in page_data.items %}
                                 <tr>
-                                    <td>1</td>
-                                    <td>环太平洋</td>
+{#                                    <td>1</td>#}
+{#                                    <td>环太平洋</td>#}
+                                    <td>{{ v.id }}</td>
+                                    <td>{{ v.title }}</td>
                                     <td>
-                                        <img data-src="holder.js/140x64" class="img-responsive center-block" alt="">
+{#                                        <img data-src="holder.js/140x64" class="img-responsive center-block" alt="">#}
+                                        <img src="{{ url_for('static',filename='uploads/'+v.logo) }}" style="width: 140px;" class="img-responsive center-block" alt="">
                                     </td>
-                                    <td>2017-06-01</td>
+{#                                    <td>2017-06-01</td>#}
+                                    <td>{{ v.addtime }}</td>
                                     <td>
-                                        <a class="label label-success">编辑</a>
+                                        <a href="{{ url_for('admin.preview_edit',id=v.id) }}" class="label label-success">编辑</a>
                                         &nbsp;
-                                        <a class="label label-danger">删除</a>
+                                        <a href="{{ url_for('admin.preview_del',id=v.id) }}" class="label label-danger">删除</a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -57,13 +63,14 @@
                     </div>
                     <div class="box-footer clearfix">
                         <ul class="pagination pagination-sm no-margin pull-right">
-                            <li><a href="#">首页</a></li>
-                            <li><a href="#">上一页</a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">下一页</a></li>
-                            <li><a href="#">尾页</a></li>
+{#                            <li><a href="#">首页</a></li>#}
+{#                            <li><a href="#">上一页</a></li>#}
+{#                            <li><a href="#">1</a></li>#}
+{#                            <li><a href="#">2</a></li>#}
+{#                            <li><a href="#">3</a></li>#}
+{#                            <li><a href="#">下一页</a></li>#}
+{#                            <li><a href="#">尾页</a></li>#}
+                            {{ pg.page(page_data,'admin.preview_list') }}
                         </ul>
                     </div>
                 </div>
