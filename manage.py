@@ -15,7 +15,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
 import os
 app.config["SECRET_KEY"] = os.urandom(24)
-
+app.config["UP_DIR"] = os.path.join(os.path.abspath(os.path.dirname(__file__)), "static/uploads/")
 
 mako.init_app(app)
 db.init_app(app)
