@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from . import admin
 from flask import render_template, redirect, url_for, flash, session, request
-from app.admin.forms import LoginForm, TagForm, MovieForm,PreviewForm
-from app.models import Admin, Tag, Movie,Preview
+from app.admin.forms import LoginForm, TagForm, MovieForm, PreviewForm
+from app.models import Admin, Tag, Movie, Preview, User
 from functools import wraps
 from app.exts import db
 from manage import app
@@ -121,7 +121,7 @@ def tag_list(page=None):
         page = 1
     page_data = Tag.query.order_by(
         Tag.addtime.desc()).paginate(
-        page=page, per_page=10, error_out=False) # 如果页码大于的话不转向404页面 （当前页码，每页条数，是否输出找不到页错误）
+        page=page, per_page=10, error_out=False)  # 如果页码大于的话不转向404页面 （当前页码，每页条数，是否输出找不到页错误）
     return render_template("admin/tag_list.html", page_data=page_data)
 
 
@@ -312,17 +312,34 @@ def preview_list(page=None):
 
 
 # 会员列表
-@admin.route("/user/list/")
+@admin.route("/user/list/<int:page>/", methods=['GET'])
 @admin_login_req
-def user_list():
-    return render_template("admin/user_list.html")
+def user_list(page=None):
+    if page is None:
+        page = 1
+    page_data = User.query.order_by(
+        User.addtime.desc()
+    ).paginate(page=page, per_page=10, error_out=False)
+    return render_template("admin/user_list.html", page_data=page_data)
 
 
-# 查看会员
-@admin.route("/user/view/")
+# 会员查看
+@admin.route("/user/view/<int:id>/", methods=['GET'])
 @admin_login_req
-def user_view():
-    return render_template("admin/user_view.html")
+def user_view(id=None):
+    user = User.query.get_or_404(int(id))
+    return render_template("admin/user_view.html", user=user)
+
+
+# 会员删除
+@admin.route("/user/del/<int:id>/", methods=['GET'])
+@admin_login_req
+def user_del(id=None):
+    user = User.query.get_or_404(int(id))
+    db.session.delete(user)
+    db.session.commit()
+    flash("删除会员成功！", 'ok')
+    return redirect(url_for('admin.user_list', page=1))
 
 
 # 评论列表
