@@ -78,7 +78,7 @@
                                     <td>{{ v.addtime }}</td>
                                     <td>
                                         <a href="{{ url_for('admin.movie_edit',id=v.id) }}" class="label label-success">编辑</a>
-                                        <a href="{{ url_for('admin.movie_del',id=v.id) }}" class="label label-success">删除</a>
+                                        <a href="{{ url_for('admin.movie_del',id=v.id) }}" class="label label-danger">删除</a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -95,7 +95,9 @@
 {#                            <li><a href="#">下一页</a></li>#}
 {#                            <li><a href="#">尾页</a></li>#}
 {#                        </ul>#}
+                        <ul class="pagination pagination-sm no-margin pull-right">
                         {{ pg.page(page_data, "admin.movie_list") }}
+                        </ul>
                     </div>
                 </div>
             </div>
