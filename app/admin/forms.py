@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, FileField, TextAreaField, SelectField,DateField
+from wtforms import StringField, PasswordField, SubmitField, FileField, TextAreaField, SelectField, DateField, \
+    SelectMultipleField
 from wtforms.validators import DataRequired, ValidationError
-from app.models import Admin,Tag
+from app.models import Admin, Tag, Auth
 from manage import app
 
 
@@ -73,7 +74,7 @@ class TagForm(FlaskForm):
 
 
 # 电影添加标签
-with app.app_context(): # 解决RuntimeError: application not registered on db instance and
+with app.app_context():  # 解决RuntimeError: application not registered on db instance and
     tags = Tag.query.all()
 
 
@@ -247,6 +248,46 @@ class AuthForm(FlaskForm):
     )
     submit = SubmitField(
         label='编辑',
+        render_kw={
+            "class": "btn btn-primary",
+        }
+    )
+
+
+# 为RoleForm获取auth数据：需要获得当前应用上下文的db
+with app.app_context():
+    auth_all = Auth.query.all()
+
+
+class RoleForm(FlaskForm):
+    """
+    角色表单
+    """
+    name = StringField(
+        label="角色名称",
+        validators=[
+            DataRequired("请输入角色名称！")
+        ],
+        description="角色名称",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入角色名称！"
+        }
+    )
+    auths = SelectMultipleField(
+        label="权限列表",
+        validators=[
+            DataRequired("请选择权限列表！")
+        ],
+        coerce=int,
+        choices=[(v.id, v.name) for v in auth_all],
+        description="权限列表",
+        render_kw={
+            "class": "form-control",
+        }
+    )
+    submit = SubmitField(
+        '编辑',
         render_kw={
             "class": "btn btn-primary",
         }
