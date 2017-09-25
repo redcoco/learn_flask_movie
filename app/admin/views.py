@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from . import admin
 from flask import render_template, redirect, url_for, flash, session, request
-from app.admin.forms import LoginForm, TagForm, MovieForm, PreviewForm
-from app.models import Admin, Tag, Movie, Preview, User, Comment, Moviecol, Oplog, Adminlog, Userlog
+from app.admin.forms import LoginForm, TagForm, MovieForm, PreviewForm, AuthForm
+from app.models import Admin, Tag, Movie, Preview, User, Comment, Moviecol, Oplog, Adminlog, Userlog, Auth
 from functools import wraps
 from app.exts import db
 from manage import app
@@ -96,9 +96,9 @@ def tag_add():
         db.session.commit()
         flash("添加标签成功", "ok")
         oplog = Oplog(
-            admin_id = session["admin_id"],
-            ip = request.remote_addr,
-            reason = "添加标签%s" % data["name"],
+            admin_id=session["admin_id"],
+            ip=request.remote_addr,
+            reason="添加标签%s" % data["name"],
         )
         db.session.add(oplog)  # 操作日志
         db.session.commit()
@@ -423,12 +423,12 @@ def moviecol_del(id=None):
 @admin_login_req
 def oplog_list(page=None):
     if page is None:
-        page=1
+        page = 1
     page_data = Oplog.query.join(Admin).filter(
         Admin.id == Oplog.admin_id).order_by(
         Oplog.addtime.desc()
     ).paginate(page=page, per_page=10)
-    return render_template("admin/oplog_list.html",page_data=page_data)
+    return render_template("admin/oplog_list.html", page_data=page_data)
 
 
 # 管理员日志列表
@@ -441,7 +441,7 @@ def adminloginlog_list(page=None):
         Admin.id == Adminlog.admin_id).order_by(
         Adminlog.addtime.desc()
     ).paginate(page=page, per_page=10)
-    return render_template("admin/adminloginlog_list.html",page_data=page_data)
+    return render_template("admin/adminloginlog_list.html", page_data=page_data)
 
 
 # 会员日志列表
@@ -455,7 +455,64 @@ def userloginlog_list(page=None):
         User.id == Userlog.user_id).order_by(
         Userlog.addtime.desc()
     ).paginate(page=page, per_page=10)
-    return render_template("admin/userloginlog_list.html",page_data=page_data)
+    return render_template("admin/userloginlog_list.html", page_data=page_data)
+
+
+# 权限添加
+@admin.route("/auth/add/", methods=["GET", "POST"])
+@admin_login_req
+def auth_add():
+    form = AuthForm()
+    if form.validate_on_submit():
+        data = form.data
+        auth = Auth(
+            name=data["name"],
+            url=data["url"]
+        )
+        db.session.add(auth)
+        db.session.commit()
+        flash("添加权限成功！", "ok")
+    return render_template("admin/auth_add.html", form=form)
+
+
+# 权限删除
+@admin.route("/auth/del/<int:id>/", methods=["GET"])
+@admin_login_req
+def auth_del(id=None):
+    auth = Auth.query.get_or_404(id)
+    db.session.delete(auth)
+    db.session.commit()
+    flash("删除权限成功！", "ok")
+    return redirect(url_for("admin.auth_list", page=1))
+
+
+# 修改权限
+@admin.route("/auth/edit/<int:id>/", methods=["GET", "POST"])
+@admin_login_req
+def auth_edit(id=None):
+    form = AuthForm()
+    auth = Auth.query.get_or_404(id)
+    if form.validate_on_submit():
+        data = form.data
+        auth.name = data["name"]
+        auth.url = data["url"]
+        db.session.add(auth)
+        db.session.commit()
+        flash("修改权限成功！", "ok")
+        return redirect(url_for("admin.auth_edit", id=id))
+    return render_template("admin/auth_edit.html", form=form, auth=auth)
+
+
+# 权限列表
+@admin.route("/auth/list/<int:page>/", methods=["GET"])
+@admin_login_req
+def auth_list(page=None):
+    if page is None:
+        page = 1
+    page_data = Auth.query.order_by(
+        Auth.addtime.desc()
+    ).paginate(page=page, per_page=10)
+    return render_template("admin/auth_list.html", page_data=page_data)
 
 
 # 添加角色
@@ -470,20 +527,6 @@ def role_add():
 @admin_login_req
 def role_list():
     return render_template("admin/role_list.html")
-
-
-# 添加权限
-@admin.route("/auth/add/")
-@admin_login_req
-def auth_add():
-    return render_template("admin/auth_add.html")
-
-
-# 权限列表
-@admin.route("/auth/list/")
-@admin_login_req
-def auth_list():
-    return render_template("admin/auth_list.html")
 
 
 # 添加管理员
