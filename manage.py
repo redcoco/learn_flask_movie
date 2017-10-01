@@ -4,7 +4,7 @@ from app.exts import db, mako
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
-app = Flask(__name__,static_url_path='')
+app = Flask(__name__, static_url_path='')
 app.debug = True
 
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:123@127.0.0.1:3306/movie"
@@ -13,9 +13,10 @@ import os
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///{}".format(os.path.join(os.path.dirname(__file__), 'movie.sqlite'))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
-import os
+
 app.config["SECRET_KEY"] = os.urandom(24)
 app.config["UP_DIR"] = os.path.join(os.path.abspath(os.path.dirname(__file__)), "static/uploads/")
+app.config["FC_DIR"] = os.path.join(os.path.abspath(os.path.dirname(__file__)), "static/uploads/users/")
 
 mako.init_app(app)
 db.init_app(app)

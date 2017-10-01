@@ -17,40 +17,73 @@
                 <h3 class="panel-title"><span class="glyphicon glyphicon-map-marker"></span>&nbsp;会员中心</h3>
             </div>
             <div class="panel-body">
-                <form role="form">
+                <form role="form" enctype="multipart/form-data" method="post">
+                        {% for msg in get_flashed_messages(category_filter=['err']) %}
+                            <p style="color: red;">{{ msg }}</p>
+                        {% endfor %}
+                        {% for msg in get_flashed_messages(category_filter=['ok']) %}
+                            <p style="color: green;">{{ msg }}</p>
+                        {% endfor %}
                     <fieldset>
                         <div class="form-group">
-                            <label for="input_name"><span class="glyphicon glyphicon-user"></span>&nbsp;昵称</label>
-                            <input id="input_name" class="form-control" placeholder="昵称" name="name" type="text"
-                                   autofocus value="jinlong">
+                            <label for="input_name"><span class="glyphicon glyphicon-user"></span>&nbsp;{{ form.name.label }}</label>
+{#                            <input id="input_name" class="form-control" placeholder="昵称" name="name" type="text"#}
+{#                                   autofocus value="jinlong">#}
+                            {{ form.name }}
+                            {% for err in form.name.errors %}
+                                <div class="col-md-12" style="color: red;">{{ err }}</div>
+                            {% endfor %}
                         </div>
-                        <div class="col-md-12" id="error_name"></div>
+{#                        <div class="col-md-12" id="error_name"></div>#}
                         <div class="form-group">
-                            <label for="input_email"><span class="glyphicon glyphicon-envelope"></span>&nbsp;邮箱</label>
-                            <input id="input_email" class="form-control" placeholder="邮箱" name="email" type="email"
-                                   autofocus value="1780316635@qq.com">
+                            <label for="input_email"><span class="glyphicon glyphicon-envelope"></span>&nbsp;{{ form.email.label }}</label>
+{#                            <input id="input_email" class="form-control" placeholder="邮箱" name="email" type="email"#}
+{#                                   autofocus value="1780316635@qq.com">#}
+                            {{ form.email }}
+                            {% for err in form.email.errors %}
+                                <div class="col-md-12" style="color: red;">{{ err }}</div>
+                            {% endfor %}
                         </div>
-                        <div class="col-md-12" id="error_email"></div>
+{#                        <div class="col-md-12" id="error_email"></div>#}
                         <div class="form-group">
-                            <label for="input_phone"><span class="glyphicon glyphicon-phone"></span>&nbsp;手机</label>
-                            <input id="input_phone" class="form-control" placeholder="手机" name="phone" type="text"
-                                   autofocus value="13700632835">
+                            <label for="input_phone"><span class="glyphicon glyphicon-phone"></span>&nbsp;{{ form.phone.label }}</label>
+{#                            <input id="input_phone" class="form-control" placeholder="手机" name="phone" type="text"#}
+{#                                   autofocus value="13700632835">#}
+                            {{ form.phone }}
+                            {% for err in form.phone.errors %}
+                                <div class="col-md-12" style="color: red;">{{ err }}</div>
+                            {% endfor %}
                         </div>
-                        <div class="col-md-12" id="error_phone"></div>
+{#                        <div class="col-md-12" id="error_phone"></div>#}
                         <div class="form-group">
-                            <label for="input_face"><span class="glyphicon glyphicon-picture"></span>&nbsp;头像</label>
-                            <img src="holder.js/100x100" class="img-responsive img-rounded">
-                            <a class="btn btn-primary" style="margin-top:6px;"><span
-                                    class="glyphicon glyphicon-open"></span>&nbsp;上传头像</a>
-                            <input id="input_face" class="form-control" name="face" type="hidden" autofocus>
+                            <label for="input_face"><span class="glyphicon glyphicon-picture"></span>&nbsp;{{ form.face.label }}</label>
+{#                            <img src="holder.js/100x100" class="img-responsive img-rounded">#}
+{#                            <a class="btn btn-primary" style="margin-top:6px;"><span#}
+{#                                    class="glyphicon glyphicon-open"></span>&nbsp;上传头像</a>#}
+{#                            <input id="input_face" class="form-control" name="face" type="hidden" autofocus>#}
+                            {{ form.face }}
+                            {% if user.face %}
+                                <img src="{{ url_for('static',filename='uploads/users/'+user.face) }}" style="width: 100px;" class="img-responsive img-rounded">
+                            {% else %}
+                                <img src="holder.js/100x100" class="img-responsive img-rounded">
+                            {% endif %}
+                            {% for err in form.face.errors %}
+                                <div class="col-md-12" style="color: red;">{{ err }}</div>
+                            {% endfor %}
                         </div>
-                        <div class="col-md-12" id="error_face"></div>
+{#                        <div class="col-md-12" id="error_face"></div>#}
                         <div class="form-group">
-                            <label for="input_info"><span class="glyphicon glyphicon-edit"></span>&nbsp;简介</label>
-                            <textarea class="form-control" rows="10" id="input_info">十年窗下无人问，一举成名天下知</textarea>
+                            <label for="input_info"><span class="glyphicon glyphicon-edit"></span>&nbsp;{{ form.info.label }}</label>
+{#                            <textarea class="form-control" rows="10" id="input_info">十年窗下无人问，一举成名天下知</textarea>#}
+                            {{ form.info }}
+                            {% for err in form.info.errors %}
+                                <div class="col-md-12" style="color: red;">{{ err }}</div>
+                            {% endfor %}
                         </div>
-                        <div class="col-md-12" id="error_info"></div>
-                        <a href="user.html" class="btn btn-success"><span class="glyphicon glyphicon-saved"></span>&nbsp;保存修改</a>
+{#                        <div class="col-md-12" id="error_info"></div>#}
+{#                        <a href="user.html" class="btn btn-success"><span class="glyphicon glyphicon-saved"></span>&nbsp;保存修改</a>#}
+                    {{ form.csrf_token }}
+                    {{ form.submit }}
                     </fieldset>
                 </form>
             </div>

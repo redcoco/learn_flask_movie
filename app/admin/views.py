@@ -38,8 +38,8 @@ def admin_auth(f):
         auth_list = Auth.query.all()
         urls = [v.url for v in auth_list for val in auths if val == v.id]
         rule = request.url_rule
-        if str(rule) not in urls:
-            abort(404)
+        # if str(rule) not in urls:
+        #     abort(404)
         return f(*args, **kwargs)
 
     return decorated_function
