@@ -244,9 +244,20 @@ def animation():
 
 
 # 电影搜索
-@home.route('/search/')
-def search():
-    return render_template("home/search.html")
+@home.route('/search/<int:page>/')
+def search(page=None):
+    if page is None:
+        page=1
+    key = request.args.get("key","")
+    movie_count = Movie.query.filter(
+        Movie.title.ilike('%'+key+'%')
+    ).count()
+    page_data=Movie.query.filter(
+        Movie.title.ilike('%' + key + '%')
+    ).order_by(
+        Movie.addtime.desc()
+    ).paginate(page=page,per_page=10)
+    return render_template("home/search.html", page_data=page_data, key=key, movie_count=movie_count)
 
 
 # 电影详情
