@@ -2,7 +2,7 @@
 from . import home
 from flask import render_template, redirect, url_for, flash,session,request
 from .forms import RegisterForm,LoginForm,UserdetailForm,PwdForm
-from app.models import User,Userlog
+from app.models import User,Userlog,Preview
 from werkzeug.security import generate_password_hash
 from app.exts import db
 from functools import wraps
@@ -173,9 +173,11 @@ def index():
 
 
 # 电影列表
+# 上映预告
 @home.route('/animation/')
 def animation():
-    return render_template("home/animation.html")
+    data=Preview.query.all()
+    return render_template("home/animation.html",data=data)
 
 
 # 电影搜索
