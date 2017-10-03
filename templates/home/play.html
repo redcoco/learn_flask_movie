@@ -35,25 +35,25 @@
                             <td style="width:30%;color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-film"></span>&nbsp;片名
                             </td>
-                            <td>环太平洋</td>
+                            <td>{{ movie.title }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-tag"></span>&nbsp;标签
                             </td>
-                            <td>科幻</td>
+                            <td>{{ movie.tag.name }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-time"></span>&nbsp;片长
                             </td>
-                            <td>05:04</td>
+                            <td>{{ movie.length }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-map-marker"></span>&nbsp;地区
                             </td>
-                            <td>美国</td>
+                            <td>{{ movie.area }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
@@ -61,11 +61,15 @@
                             </td>
                             <td>
                                 <div>
+                                    {% for val in range (1, movie.star + 1) %}
                                     <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>
-                                    <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>
-                                    <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>
+                                    {% endfor %}
+{#                                    <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>#}
+{#                                    <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>#}
+                                {% for val in range(1, 6-movie.star) %}
                                     <span class="glyphicon glyphicon-star-empty" style="color:#FFD119"></span>
-                                    <span class="glyphicon glyphicon-star-empty" style="color:#FFD119"></span>
+                                {% endfor %}
+{#                                    <span class="glyphicon glyphicon-star-empty" style="color:#FFD119"></span>#}
                                 </div>
                             </td>
                         </tr>
@@ -73,26 +77,26 @@
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-calendar"></span>&nbsp;上映时间
                             </td>
-                            <td>2013年7月12日</td>
+                            <td>{{ movie.release_time }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-play"></span>&nbsp;播放数量
                             </td>
-                            <td>1000</td>
+                            <td>{{ movie.playnum }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-comment"></span>&nbsp;评论数量
                             </td>
-                            <td>1000</td>
+                            <td>{{ movie.commentnum }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-picture"></span>&nbsp;影片介绍
                             </td>
                             <td>
-                                该片主要讲述了人类为了抵抗怪兽的进攻，研制出了高大的机器战士与来犯怪兽进行对抗的故事。
+                               {{ movie.info }}
                             </td>
                         </tr>
                     </table>
@@ -291,8 +295,8 @@
         jwplayer("moviecontainer").setup({
             flashplayer: "{{ url_for('static', filename='jwplayer/jwplayer.flash.swf') }}",
             playlist: [{
-                file: "{{ url_for('static', filename='video/htpy.mp4') }}",
-                title: "环太平洋"
+                file: "{{ url_for('static', filename='uploads/' + movie.url) }}",
+                title: "{{ movie.title }}"
             }],
             modes: [{
                 type: "html5"
