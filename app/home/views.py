@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from . import home
 from flask import render_template, redirect, url_for, flash, session, request
-from .forms import RegisterForm, LoginForm, UserdetailForm, PwdForm,CommentForm
-from app.models import User, Userlog, Preview, Tag, Movie,Comment
+from .forms import RegisterForm, LoginForm, UserdetailForm, PwdForm, CommentForm
+from app.models import User, Userlog, Preview, Tag, Movie, Comment, Moviecol
 from werkzeug.security import generate_password_hash
 from app.exts import db
 from functools import wraps
@@ -11,6 +11,7 @@ from app.admin.views import change_filename
 import os
 import uuid
 from manage import app
+import json
 
 
 def user_login_req(f):
@@ -146,7 +147,7 @@ def pwd():
 @user_login_req
 def comments(page=None):
     if page is None:
-        page=1
+        page = 1
     page_data = Comment.query.join(
         Movie
     ).join(
@@ -156,7 +157,7 @@ def comments(page=None):
         User.id == session['user_id']
     ).order_by(
         Comment.addtime.desc()
-    ).paginate(page=page,per_page=10)
+    ).paginate(page=page, per_page=10)
     return render_template("home/comments.html", page_data=page_data)
 
 
@@ -172,11 +173,49 @@ def loginlog(page=None):
     return render_template("home/loginlog.html", page_data=page_data)
 
 
-# 收藏电影
-@home.route('/moviecol/')
+# 添加电影收藏
+@home.route('/moviecol/add/', methods=["GET"])
 @user_login_req
-def moviecol():
-    return render_template("home/moviecol.html")
+def moviecol_add():
+    uid = request.args.get("uid", "")
+    mid = request.args.get("mid", "")
+    moviecol = Moviecol.query.filter_by(
+        user_id=int(uid),
+        movie_id=int(mid)
+    ).count()
+
+    if moviecol == 1:
+        data = dict(ok=0)
+
+    if moviecol == 0:
+        moviecol = Moviecol(
+            user_id=int(uid),
+            movie_id=int(mid)
+        )
+        db.session.add(moviecol)
+        db.session.commit()
+        data = dict(ok=1)
+
+    return json.dumps(data)
+
+
+# 收藏电影
+@home.route('/moviecol/<int:page>/', methods=["GET"])
+@user_login_req
+def moviecol(page=None):
+    if page is None:
+        page = 1
+    page_data = Moviecol.query.join(
+        Movie
+    ).join(
+        User
+    ).filter(
+        Moviecol.movie_id == Movie.id,
+        Moviecol.user_id == session["user_id"]
+    ).order_by(
+        Moviecol.addtime.desc()
+    ).paginate(page=page, per_page=10)
+    return render_template("home/moviecol.html", page_data=page_data)
 
 
 # 首页
@@ -259,16 +298,16 @@ def animation():
 @home.route('/search/<int:page>/')
 def search(page=None):
     if page is None:
-        page=1
-    key = request.args.get("key","")
+        page = 1
+    key = request.args.get("key", "")
     movie_count = Movie.query.filter(
-        Movie.title.ilike('%'+key+'%')
+        Movie.title.ilike('%' + key + '%')
     ).count()
-    page_data=Movie.query.filter(
+    page_data = Movie.query.filter(
         Movie.title.ilike('%' + key + '%')
     ).order_by(
         Movie.addtime.desc()
-    ).paginate(page=page,per_page=10)
+    ).paginate(page=page, per_page=10)
     return render_template("home/search.html", page_data=page_data, key=key, movie_count=movie_count)
 
 
@@ -282,7 +321,7 @@ def play(id=None, page=None):
         Movie.id == int(id)
     ).first_or_404()
     if page is None:
-        page=1
+        page = 1
     if 'user_id' in session:
         page_data = Comment.query.join(
             Movie
@@ -297,22 +336,22 @@ def play(id=None, page=None):
     else:
         return redirect(url_for('home.login'))
 
-    movie.playnum +=1
+    movie.playnum += 1
     form = CommentForm()
     if "user" in session and form.validate_on_submit():
         data = form.data
         comment = Comment(
-            content = data['content'],
+            content=data['content'],
             movie_id=movie.id,
             user_id=session['user_id']
         )
         db.session.add(comment)
         db.session.commit()
-        movie.commentnum +=1
+        movie.commentnum += 1
         db.session.add(movie)
         db.session.commit()
-        flash('添加评论成功！','ok')
+        flash('添加评论成功！', 'ok')
         return redirect(url_for("home.play", id=movie.id, page=1))
     db.session.add(movie)
     db.session.commit()
-    return render_template("home/play.html",  movie=movie, form=form, page_data=page_data)
+    return render_template("home/play.html", movie=movie, form=form, page_data=page_data)

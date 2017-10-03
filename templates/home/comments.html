@@ -21,7 +21,7 @@
                 <ul class="commentList">
                     {% for v in page_data.items %}
                     <li class="item cl">
-                        <a href="user.html">
+                        <a href="{{ url_for('home.user') }}">
                             <i class="avatar size-L radius">
                                 {% if v.user.face %}
                                     <img alt="50x50" src="{{ url_for('static',filename='uploads/users/'+v.user.face) }}" class="img-circle"
@@ -37,7 +37,6 @@
                                 <div class="comment-meta">
                                     <a class="comment-author" href="user.html">{{ v.user.name }}</a>
                                     评论于
-                                    <time title="{{ v.addtime }}" datetime="{{ v.addtime }}">{{ v.addtime }}
                                     <time title="{{ v.addtime }}" datetime="{{ v.addtime }}">{{ v.addtime }}
                                     </time>
                                 </div>

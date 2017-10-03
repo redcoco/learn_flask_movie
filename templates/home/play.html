@@ -148,11 +148,15 @@
                         &nbsp;
                         <a class="btn btn-danger" id="btn-col"><span class="glyphicon glyphicon-heart"></span>&nbsp;收藏电影</a>
                     </form>
+                    <div class="col-md-12">
+                        <font style="color:green" id="show_col_msg"></font>
+                    </div>
+                    <div class="clearfix"></div>
                 {% endif %}
                     <ul class="commentList">
                         {% for v in page_data.items %}
                         <li class="item cl">
-                            <a href="user.html">
+                            <a href="{{ url_for('home.user') }}">
                                 <i class="avatar size-L radius">
                                     {% if v.user.face %}
                                     <img alt="50x50" src="{{ url_for('static',filename='uploads/users/'+v.user.face) }}" class="img-circle"
@@ -276,4 +280,28 @@
         });
     </script>
     <!--播放页面-->
+    <!--收藏功能-->
+    <script>
+        $(document).ready(function () {
+            $("#btn-col").click(function () {
+                var mid = {{ movie.id }};
+                var uid = {{ session['user_id'] }};
+                $.ajax({
+                    url: "{{ url_for('home.moviecol_add') }}",
+                    type: "GET",
+                    data: "mid=" + mid + "&uid=" + uid,
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.ok == 1) {
+                            $("#show_col_msg").empty();
+                            $("#show_col_msg").append("收藏成功！");
+                        } else {
+                            $("#show_col_msg").empty();
+                            $("#show_col_msg").append("已经收藏！");
+                        }
+                    }
+                })
+            });
+        });
+    </script>
 {% endblock %}
