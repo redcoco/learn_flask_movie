@@ -30,7 +30,7 @@
                 <div class="panel-heading">
                     <h3 class="panel-title"><span class="glyphicon glyphicon-facetime-video"></span>&nbsp;电影介绍</h3>
                 </div>
-                <div class="panel-body" style="height:459px;">
+                <div class="panel-body" style="height:459px;overflow:scroll;">
                     <table class="table">
                         <tr>
                             <td style="width:30%;color:#ccc;font-weight:bold;font-style:italic;">
@@ -137,8 +137,8 @@
                             </div>
                             <div class="col-xs-12" id="error_content">
                                 {% for err in form.content.errors %}
-                                    <div class="col-md-12">
-                                        <font style="color: red">{{ err }}</font>
+                                    <div class="col-md-12" style="color: red">
+                                        {{ err }}
                                     </div>
                                 {% endfor %}
                             </div>
