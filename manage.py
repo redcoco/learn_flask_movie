@@ -3,6 +3,7 @@ from flask import Flask, render_template
 from app.exts import db, mako
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
+from flask_redis import FlaskRedis
 
 app = Flask(__name__, static_url_path='')
 app.debug = True
@@ -13,11 +14,13 @@ import os
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///{}".format(os.path.join(os.path.dirname(__file__), 'movie.sqlite'))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
+app.config["REDIS_URL"] = "redis://localhost:6379/0"
 
 app.config["SECRET_KEY"] = os.urandom(24)
 app.config["UP_DIR"] = os.path.join(os.path.abspath(os.path.dirname(__file__)), "static/uploads/")
 app.config["FC_DIR"] = os.path.join(os.path.abspath(os.path.dirname(__file__)), "static/uploads/users/")
 
+rd = FlaskRedis(app)
 mako.init_app(app)
 db.init_app(app)
 
